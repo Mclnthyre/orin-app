@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <meta charset="UTF-8">
+  <title>Orin App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<header>Orin App</header>
+
+<main id="conteudo"></main>
+
+<nav class="menu">
+  <button onclick="mostrar('artigos')">
+    <span>📖</span>
+    <small>Artigos</small>
+  </button>
+  <button onclick="mostrar('audios')">
+    <span>🎧</span>
+    <small>Áudios</small>
+  </button>
+  <button onclick="mostrar('videos')">
+    <span>🎥</span>
+    <small>Vídeos</small>
+  </button>
+  <button onclick="mostrar('servicos')">
+    <span>🔮</span>
+    <small>Serviços</small>
+  </button>
+</nav>
+
+<script src="js/app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+</body>
+</html>

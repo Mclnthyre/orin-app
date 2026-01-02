@@ -1,0 +1,42 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "img/uploads"
+public_folder: "/img/uploads"
+
+collections:
+  - name: "conteudo"
+    label: "Conteúdo do App"
+    files:
+      - label: "Dados"
+        name: "dados"
+        file: "content/dados.json"
+        fields:
+          - label: "Artigos"
+            name: "artigos"
+            widget: "list"
+            fields:
+              - {label: "Título", name: "titulo", widget: "string"}
+              - {label: "Texto", name: "texto", widget: "text"}
+
+          - label: "Áudios"
+            name: "audios"
+            widget: "list"
+            fields:
+              - {label: "Título", name: "titulo", widget: "string"}
+              - {label: "Embed", name: "embed", widget: "text"}
+
+          - label: "Vídeos"
+            name: "videos"
+            widget: "list"
+            fields:
+              - {label: "Título", name: "titulo", widget: "string"}
+              - {label: "Embed", name: "embed", widget: "text"}
+
+          - label: "Serviços"
+            name: "servicos"
+            widget: "list"
+            fields:
+              - {label: "Nome", name: "nome", widget: "string"}
+              - {label: "Link", name: "link", widget: "string"}
