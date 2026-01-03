@@ -1,13 +1,30 @@
+:root {
+  --primary: #90190d;
+  --bg: #f5f5f5;
+  --card: #ffffff;
+  --text: #1c1c1c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --text: #ffffff;
+  }
+}
+
 body {
   margin: 0;
-  font-family: sans-serif;
-  background: #fff;
+  font-family: system-ui, -apple-system, Roboto, Arial;
+  background: var(--bg);
+  color: var(--text);
 }
 
 header {
-  background: #004d40;
+  background: var(--primary);
   color: white;
-  padding: 15px;
+  padding: 16px;
+  font-size: 20px;
   text-align: center;
 }
 
@@ -15,40 +32,55 @@ header {
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: 60px;
+  height: 64px;
+  background: var(--card);
   display: flex;
-  background: #004d40;
-  border-top: 1px solid #00332c;
+  border-top: 1px solid rgba(0,0,0,.1);
 }
 
 .menu button {
   flex: 1;
   border: none;
   background: none;
-  color: white;
+  color: var(--text);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  font-size: 18px;
+  justify-content: center;
 }
 
-.menu button small {
-  font-size: 11px;
-  margin-top: 2px;
+.menu button.active {
+  color: var(--primary);
 }
 
 main {
-  padding: 15px;
-  margin-bottom: 60px;
+  padding: 16px;
+  padding-bottom: 80px;
 }
 
-article {
-  margin-bottom: 20px;
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
 }
 
-iframe {
+.card img {
   width: 100%;
-  height: 200px;
-  border: none;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 14px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.card p {
+  opacity: .8;
 }
