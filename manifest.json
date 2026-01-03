@@ -1,8 +1,8 @@
 {
   "name": "Orin App",
   "short_name": "Orin",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
