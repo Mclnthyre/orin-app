@@ -1,7 +1,7 @@
 {
   "name": "Orin App",
   "short_name": "Orin",
-  "start_url": "/",
+  "start_url": "https://orinapp.netlify.app/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#006400",
@@ -10,4 +10,5 @@
     "sizes": "192x192",
     "type": "image/png"
   }]
+
 }
