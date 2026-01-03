@@ -1,6 +1,6 @@
 const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
 
-const BASE = `https://opensheet.elk.sh/$1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE`;
+const BASE = `https://opensheet.elk.sh/1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE`;
 
 let dados = {};
 
@@ -80,3 +80,4 @@ function mostrar(secao) {
 }
 
 carregar();
+
