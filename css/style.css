@@ -84,3 +84,41 @@ main {
 .card p {
   opacity: .8;
 }
+
+.leitura {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #90190d;
+  color: #fff;
+}
+
+.top-bar .back {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.artigo-container {
+  padding: 16px;
+}
+
+.artigo-img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.artigo-texto {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+
