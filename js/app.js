@@ -32,15 +32,15 @@ function mostrar(secao) {
   let html = '';
 
   if (secao === 'artigos') {
-    html = dados.artigos.map(a => `
-      <div class="card">
-        <img src="${a.imagem}">
-        <div class="card-body">
-          <h2>${a.titulo}</h2>
-          <p>${a.resumo}</p>
-        </div>
-      </div>
-    `).join('');
+   html = dados.artigos.map((a, i) => `
+  <div class="card" onclick="location.href='artigo.html?id=${i}'">
+    ${a.imagem ? `<img src="${a.imagem}">` : ''}
+    <div class="card-body">
+      <h2>${a.titulo}</h2>
+      <p>${a.resumo}</p>
+    </div>
+  </div>
+`).join('');
   }
 
   if (secao === 'audios') {
@@ -80,4 +80,5 @@ function mostrar(secao) {
 }
 
 carregar();
+
 
