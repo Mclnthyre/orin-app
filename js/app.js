@@ -85,6 +85,28 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // mostra o botão
+  installBtn.style.display = 'block';
+});
+
+function instalar() {
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+
+  deferredPrompt.userChoice.then(choice => {
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+  });
+}
+
 
 
 
