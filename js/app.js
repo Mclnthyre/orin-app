@@ -1,42 +1,79 @@
-const ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
+const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
+
+const BASE = `https://opensheet.elk.sh/$1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE`;
+
+let dados = {};
 
 async function carregar() {
-  const base = `https://opensheet.elk.sh/${ID}`;
+  try {
+    const [artigos, audios, videos, servicos] = await Promise.all([
+      fetch(`${BASE}/artigos`).then(r => r.json()),
+      fetch(`${BASE}/audios`).then(r => r.json()),
+      fetch(`${BASE}/videos`).then(r => r.json()),
+      fetch(`${BASE}/servicos`).then(r => r.json())
+    ]);
 
-  const artigos = await fetch(`${base}/artigos`).then(r => r.json());
-  const audios = await fetch(`${base}/audios`).then(r => r.json());
-  const videos = await fetch(`${base}/videos`).then(r => r.json());
-  const servicos = await fetch(`${base}/servicos`).then(r => r.json());
+    dados = { artigos, audios, videos, servicos };
+    mostrar('artigos');
+  } catch (e) {
+    document.getElementById('conteudo').innerHTML =
+      '<p>Erro ao carregar conteúdo.</p>';
+  }
+}
 
-  window.dados = { artigos, audios, videos, servicos };
-  mostrar('artigos');
+function ativar(secao) {
+  document.querySelectorAll('.menu button')
+    .forEach(b => b.classList.remove('active'));
+  document.getElementById(secao + '-btn').classList.add('active');
 }
 
 function mostrar(secao) {
+  ativar(secao);
   let html = '';
 
   if (secao === 'artigos') {
-    html = dados.artigos.map(a =>
-      `<article><h2>${a.titulo}</h2><p>${a.texto}</p></article>`
-    ).join('');
+    html = dados.artigos.map(a => `
+      <div class="card">
+        <img src="${a.imagem}">
+        <div class="card-body">
+          <h2>${a.titulo}</h2>
+          <p>${a.resumo}</p>
+        </div>
+      </div>
+    `).join('');
   }
 
   if (secao === 'audios') {
-    html = dados.audios.map(a =>
-      `<article><h3>${a.titulo}</h3>${a.embed}</article>`
-    ).join('');
+    html = dados.audios.map(a => `
+      <div class="card">
+        <div class="card-body">
+          <h2>${a.titulo}</h2>
+          ${a.embed}
+        </div>
+      </div>
+    `).join('');
   }
 
   if (secao === 'videos') {
-    html = dados.videos.map(v =>
-      `<article><h3>${v.titulo}</h3>${v.embed}</article>`
-    ).join('');
+    html = dados.videos.map(v => `
+      <div class="card">
+        <div class="card-body">
+          <h2>${v.titulo}</h2>
+          ${v.embed}
+        </div>
+      </div>
+    `).join('');
   }
 
   if (secao === 'servicos') {
-    html = dados.servicos.map(s =>
-      `<p><a href="${s.link}" target="_blank">${s.nome}</a></p>`
-    ).join('');
+    html = dados.servicos.map(s => `
+      <div class="card">
+        <div class="card-body">
+          <h2>${s.nome}</h2>
+          <a href="${s.link}" target="_blank">Acessar</a>
+        </div>
+      </div>
+    `).join('');
   }
 
   document.getElementById('conteudo').innerHTML = html;
