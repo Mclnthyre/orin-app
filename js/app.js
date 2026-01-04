@@ -1,6 +1,4 @@
-const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
-
-const BASE = `https://opensheet.elk.sh/1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE`;
+const BASE = "https://opensheet.elk.sh/1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
 
 let dados = {};
 
@@ -32,22 +30,25 @@ function mostrar(secao) {
   let html = '';
 
   if (secao === 'artigos') {
-   html = dados.artigos.map((a, i) => `
-  <div class="card" onclick="location.href='artigo.html?id=${i}'">
-    ${a.imagem ? `<img src="${a.imagem}">` : ''}
-    <div class="card-body">
-      <h2>${a.titulo}</h2>
-      <p>${a.resumo}</p>
-    </div>
-  </div>
-`).join('');
+    html = dados.artigos.map((a, i) => `
+      <div class="card" onclick="location.href='artigo.html?id=${i}'">
+        ${a.imagem ? `<img src="${a.imagem}">` : ''}
+        <div class="card-body">
+          <h2>${a.titulo}</h2>
+          <p>${a.resumo}</p>
+        </div>
+      </div>
+    `).join('');
   }
 
   if (secao === 'audios') {
     html = dados.audios.map(a => `
-      <div class="card">
-        <div class="card-body">
-          <h2>${a.titulo}</h2>
+      <div class="audio-card">
+        <div class="audio-header">
+          <span class="material-icons-outlined audio-icon">headphones</span>
+          <div class="audio-title">${a.titulo}</div>
+        </div>
+        <div class="audio-player">
           ${a.embed}
         </div>
       </div>
@@ -81,32 +82,26 @@ function mostrar(secao) {
 
 carregar();
 
+/* SERVICE WORKER */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 
+/* INSTALL */
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-
-  // mostra o botão
   installBtn.style.display = 'block';
 });
 
 function instalar() {
   if (!deferredPrompt) return;
-
   deferredPrompt.prompt();
-
-  deferredPrompt.userChoice.then(choice => {
-    deferredPrompt = null;
+  deferredPrompt.userChoice.finally(() => {
     installBtn.style.display = 'none';
+    deferredPrompt = null;
   });
 }
-
-
-
-
