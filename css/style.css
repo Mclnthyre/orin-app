@@ -13,6 +13,24 @@
   }
 }
 
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: #90190d;
+  z-index: 2000;
+}
+
+.top-bar .share {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Roboto, Arial;
@@ -190,4 +208,5 @@ main {
   color: #fff;
   font-size: 18px;
 }
+
 
