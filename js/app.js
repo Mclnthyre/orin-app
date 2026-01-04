@@ -44,21 +44,15 @@ function mostrar(secao) {
   }
 
   if (secao === 'audios') {
-  html = dados.audios.map(a => `
-    <div class="card">
-      <div class="audio-card">
-        <div class="audio-header">
+    html = dados.audios.map(a => 
+      <div class="card">
+        <div class="card-body">
           <h2>${a.titulo}</h2>
-        </div>
-
-        <div class="audio-player">
           ${a.embed}
         </div>
       </div>
-    </div>
-  `).join('');
-}
-
+    ).join('');
+  }
 
   if (secao === 'videos') {
     html = dados.videos.map(v => 
@@ -112,4 +106,3 @@ function instalar() {
     installBtn.style.display = 'none';
   });
 }
-
