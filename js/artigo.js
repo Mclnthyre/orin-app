@@ -35,3 +35,14 @@ async function carregarArtigo() {
 }
 
 carregarArtigo();
+
+window.addEventListener('scroll', () => {
+  const scrollTop = document.documentElement.scrollTop;
+  const height =
+    document.documentElement.scrollHeight -
+    document.documentElement.clientHeight;
+
+  const progress = (scrollTop / height) * 100;
+  document.getElementById('progress').style.width = progress + '%';
+});
+
