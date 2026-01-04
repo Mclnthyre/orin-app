@@ -183,3 +183,11 @@ main {
   z-index: 2000;
 }
 
+.top-bar .share {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+}
+
