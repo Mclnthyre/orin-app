@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orin App</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Material Icons (share) -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+
+<body class="leitura">
+
+  <!-- Barra de progresso -->
+  <div id="progress"></div>
+
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <button class="back" onclick="history.back()" aria-label="Voltar">←</button>
+    <span>Artigo</span>
+    <button class="share" onclick="compartilharArtigoAtual()" aria-label="Compartilhar">
+      <span class="material-icons-outlined">share</span>
+    </button>
+  </header>
+
+  <!-- Conteúdo do artigo -->
+  <main id="artigo" class="artigo-container">
+    <!-- Skeleton inicial (JS pode substituir) -->
+    <div class="skeleton-img"></div>
+    <div class="skeleton-title"></div>
+    <div class="skeleton-text"></div>
+    <div class="skeleton-text"></div>
+  </main>
+
+  <script src="js/artigo.js"></script>
+</body>
+</html>
