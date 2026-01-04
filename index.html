@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+  <meta charset="UTF-8">
+
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-  <meta charset="UTF-8">
+
   <title>Orin App</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#90190d">
 
@@ -14,22 +17,29 @@
 
 <body>
 
-<header>Orin</header>
+<header class="home-header">Orin</header>
 
 <main id="conteudo"></main>
 
 <nav class="menu">
   <button id="artigos-btn" onclick="mostrar('artigos')">
-    <span>📖</span><small>Artigos</small>
+    <span>📖</span>
+    <small>Artigos</small>
   </button>
+
   <button id="audios-btn" onclick="mostrar('audios')">
-    <span>🎧</span><small>Áudios</small>
+    <span>🎧</span>
+    <small>Áudios</small>
   </button>
+
   <button id="videos-btn" onclick="mostrar('videos')">
-    <span>🎥</span><small>Vídeos</small>
+    <span>🎥</span>
+    <small>Vídeos</small>
   </button>
+
   <button id="servicos-btn" onclick="mostrar('servicos')">
-    <span>🔮</span><small>Serviços</small>
+    <span>🔮</span>
+    <small>Serviços</small>
   </button>
 </nav>
 
@@ -38,5 +48,6 @@
 </button>
 
 <script src="js/app.js"></script>
+
 </body>
 </html>
