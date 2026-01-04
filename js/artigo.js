@@ -1,8 +1,10 @@
 const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
 const BASE = `https://opensheet.elk.sh/${PLANILHA_ID}`;
 
+let artigoAtual = null;
+
 // ======================
-// Skeleton Loading
+// Skeleton
 // ======================
 function mostrarSkeleton() {
   document.getElementById('artigo').innerHTML = `
@@ -10,113 +12,80 @@ function mostrarSkeleton() {
     <div class="skeleton-title"></div>
     <div class="skeleton-text"></div>
     <div class="skeleton-text"></div>
-    <div class="skeleton-text short"></div>
   `;
 }
 
 // ======================
-// SEO Dinâmico
+// SEO
 // ======================
-function atualizarSEO(artigo) {
-  document.title = artigo.titulo + " | Orin";
+function atualizarSEO(a) {
+  document.title = `${a.titulo} | Orin`;
 
-  let desc = document.querySelector('meta[name="description"]');
-  if (!desc) {
-    desc = document.createElement('meta');
-    desc.name = "description";
-    document.head.appendChild(desc);
+  let meta = document.querySelector('meta[name="description"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = "description";
+    document.head.appendChild(meta);
   }
-
-  desc.content = artigo.resumo || artigo.titulo;
+  meta.content = a.resumo || a.titulo;
 }
 
 // ======================
-// Compartilhamento
+// Compartilhar (HEADER)
 // ======================
-function compartilharArtigo(titulo) {
+function compartilharArtigoAtual() {
+  if (!artigoAtual) return;
+
   const url = window.location.href;
 
   if (navigator.share) {
     navigator.share({
-      title: titulo,
+      title: artigoAtual.titulo,
       url
     });
   } else {
     navigator.clipboard.writeText(url);
-    alert("Link copiado para a área de transferência!");
+    alert("Link copiado!");
   }
 }
 
 // ======================
-// Carregar Artigo
+// Artigo
 // ======================
 async function carregarArtigo() {
-  const params = new URLSearchParams(location.search);
-  const id = params.get('id');
-
-  if (!id) {
-    document.getElementById('artigo').innerHTML =
-      '<p>Artigo não encontrado.</p>';
-    return;
-  }
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) return;
 
   mostrarSkeleton();
 
-  try {
-    const artigos = await fetch(`${BASE}/artigos`).then(r => r.json());
-    const a = artigos[id];
+  const artigos = await fetch(`${BASE}/artigos`).then(r => r.json());
+  const a = artigos[id];
+  if (!a) return;
 
-    if (!a) {
-      document.getElementById('artigo').innerHTML =
-        '<p>Artigo não encontrado.</p>';
-      return;
-    }
+  artigoAtual = a;
+  atualizarSEO(a);
 
-    atualizarSEO(a);
-
-    document.getElementById('artigo').innerHTML = `
-      ${a.imagem ? `<img src="${a.imagem}" class="artigo-img" loading="lazy">` : ''}
-
-      <h1>${a.titulo}</h1>
-
-      <button class="btn-share" onclick="compartilharArtigo('${a.titulo.replace(/'/g, "\\'")}')">
-        Compartilhar
-      </button>
-
-      <div class="artigo-texto">
-        ${a.texto.replace(/\n/g, '<br><br>')}
-      </div>
-    `;
-  } catch (e) {
-    document.getElementById('artigo').innerHTML =
-      '<p>Erro ao carregar artigo.</p>';
-  }
+  document.getElementById('artigo').innerHTML = `
+    ${a.imagem ? `<img src="${a.imagem}" class="artigo-img" loading="lazy">` : ''}
+    <h1>${a.titulo}</h1>
+    <div class="artigo-texto">
+      ${a.texto.replace(/\n/g, '<br><br>')}
+    </div>
+  `;
 }
 
 // ======================
 // Barra de Progresso
 // ======================
-function initProgressBar() {
-  window.addEventListener('scroll', () => {
-    const scrollTop = document.documentElement.scrollTop;
-    const height =
-      document.documentElement.scrollHeight -
-      document.documentElement.clientHeight;
+window.addEventListener('scroll', () => {
+  const bar = document.getElementById('progress');
+  const scrollTop = document.documentElement.scrollTop;
+  const height =
+    document.documentElement.scrollHeight -
+    document.documentElement.clientHeight;
 
-    const progress = (scrollTop / height) * 100;
-    const bar = document.getElementById('progress');
+  const percent = (scrollTop / height) * 100;
+  bar.style.width = percent + '%';
+});
 
-    if (progress < 5) {
-      bar.style.opacity = 0;
-    } else {
-      bar.style.opacity = 1;
-      bar.style.width = progress + '%';
-    }
-  });
-}
-
-// ======================
-// Init
-// ======================
 carregarArtigo();
-initProgressBar();
