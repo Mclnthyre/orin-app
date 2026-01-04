@@ -6,6 +6,8 @@
   <title>Orin App</title>
 
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
 </head>
 <body class="leitura">
   <div id="progress"></div>
@@ -14,7 +16,10 @@
   <header class="top-bar">
   <button class="back" onclick="history.back()">←</button>
   <span>Artigo</span>
-  <button class="share" onclick="compartilharArtigoAtual()">⤴</button>
+  <button class="share" onclick="compartilharArtigoAtual()" aria-label="Compartilhar">
+  <span class="material-icons-outlined">share</span>
+</button>
+
 </header>
 
 
