@@ -2,46 +2,36 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Carregando...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orin App</title>
 
-  <meta name="description" content="">
   <link rel="stylesheet" href="css/style.css">
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Material Icons (share) -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 </head>
 
 <body class="leitura">
 
-  <!-- HEADER FIXO -->
-  <header class="leitura-header">
-    <button class="icon-btn" onclick="history.back()">
-      <span class="material-icons">arrow_back</span>
-    </button>
+  <!-- Barra de progresso -->
+  <div id="progress"></div>
 
-    <button class="icon-btn" id="shareBtn">
-      <span class="material-icons">share</span>
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <button class="back" onclick="history.back()" aria-label="Voltar">←</button>
+    <span>Artigo</span>
+    <button class="share" onclick="compartilharArtigoAtual()" aria-label="Compartilhar">
+      <span class="material-icons-outlined">share</span>
     </button>
   </header>
 
-  <!-- PROGRESSO -->
-  <div class="progress-bar">
-    <div class="progress"></div>
-  </div>
-
-  <!-- CONTEÚDO -->
-  <main class="artigo-container">
-
-    <div class="skeleton skeleton-title"></div>
-    <div class="skeleton skeleton-img"></div>
-    <div class="skeleton skeleton-text"></div>
-
-    <article id="artigo" hidden>
-      <h1 id="titulo"></h1>
-      <img id="imagem" alt="" hidden>
-      <div id="conteudo"></div>
-    </article>
-
+  <!-- Conteúdo do artigo -->
+  <main id="artigo" class="artigo-container">
+    <!-- Skeleton inicial (JS pode substituir) -->
+    <div class="skeleton-img"></div>
+    <div class="skeleton-title"></div>
+    <div class="skeleton-text"></div>
+    <div class="skeleton-text"></div>
   </main>
 
   <script src="js/artigo.js"></script>
