@@ -24,12 +24,24 @@
 }
 
 .top-bar .share {
-  margin-left: auto;
   background: none;
   border: none;
-  color: #fff;
-  font-size: 18px;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #90190d;
 }
+
+.top-bar .share:active {
+  background: rgba(144, 25, 13, 0.12);
+}
+
+.material-icons-outlined {
+  font-size: 22px;
+}
+
 
 body {
   margin: 0;
@@ -208,5 +220,6 @@ main {
   color: #fff;
   font-size: 18px;
 }
+
 
 
