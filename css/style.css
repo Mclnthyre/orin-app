@@ -372,7 +372,7 @@ main {
 
 .accordion-body {
   max-height: 0;
-  overflow: hidden;
+  overflow: visible;
   transition: max-height .35s ease;
 }
 
@@ -387,5 +387,6 @@ main {
 .material-icons-outlined.rotated {
   transform: rotate(180deg);
 }
+
 
 
