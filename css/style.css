@@ -85,7 +85,9 @@ header {
 
 main {
   padding: 16px;
-  padding-bottom: 80px;
+  padding-bottom: calc(64px + 24px);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .card {
@@ -385,4 +387,5 @@ main {
 .material-icons-outlined.rotated {
   transform: rotate(180deg);
 }
+
 
