@@ -170,11 +170,19 @@ body:not(.leitura) main {
   margin-right: 12px;
 }
 
-.top-bar .share {
-  margin-left: auto;
-  background: none;
-  border: none;
-  color: #fff;
+.top-bar .share { 
+                 background: none; 
+                 border: none; 
+                 padding: 6px; 
+                 border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  color: #90190d; } 
+
+.top-bar .share:active 
+{ 
+  background: rgba(144, 25, 13, 0.12);
 }
 
 #progress {
@@ -186,4 +194,5 @@ body:not(.leitura) main {
   background: #90190d;
   z-index: 2000;
 }
+
 
