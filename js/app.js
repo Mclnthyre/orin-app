@@ -1,4 +1,5 @@
-const BASE = "https://opensheet.elk.sh/1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
+const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
+const BASE = `https://opensheet.elk.sh/${PLANILHA_ID}`;
 
 let dados = {};
 
@@ -29,6 +30,7 @@ function mostrar(secao) {
   ativar(secao);
   let html = '';
 
+  /* ===== ARTIGOS ===== */
   if (secao === 'artigos') {
     html = dados.artigos.map((a, i) => `
       <div class="card" onclick="location.href='artigo.html?id=${i}'">
@@ -41,20 +43,25 @@ function mostrar(secao) {
     `).join('');
   }
 
+  /* ===== ÁUDIOS ===== */
   if (secao === 'audios') {
     html = dados.audios.map(a => `
-      <div class="audio-card">
-        <div class="audio-header">
-          <span class="material-icons-outlined audio-icon">headphones</span>
-          <div class="audio-title">${a.titulo}</div>
-        </div>
-        <div class="audio-player">
-          ${a.embed}
+      <div class="card">
+        <div class="audio-card">
+          <div class="audio-header">
+            <span class="audio-icon material-icons-outlined">headphones</span>
+            <h3 class="audio-title">${a.titulo}</h3>
+          </div>
+
+          <div class="audio-player">
+            ${a.embed}
+          </div>
         </div>
       </div>
     `).join('');
   }
 
+  /* ===== VÍDEOS ===== */
   if (secao === 'videos') {
     html = dados.videos.map(v => `
       <div class="card">
@@ -66,6 +73,7 @@ function mostrar(secao) {
     `).join('');
   }
 
+  /* ===== SERVIÇOS ===== */
   if (secao === 'servicos') {
     html = dados.servicos.map(s => `
       <div class="card">
@@ -82,26 +90,28 @@ function mostrar(secao) {
 
 carregar();
 
-/* SERVICE WORKER */
+/* ===== SERVICE WORKER ===== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 
-/* INSTALL */
+/* ===== BOTÃO INSTALAR APP ===== */
+
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  installBtn.style.display = 'block';
+  installBtn.style.display = 'flex';
 });
 
 function instalar() {
   if (!deferredPrompt) return;
+
   deferredPrompt.prompt();
   deferredPrompt.userChoice.finally(() => {
-    installBtn.style.display = 'none';
     deferredPrompt = null;
+    installBtn.style.display = 'none';
   });
 }
