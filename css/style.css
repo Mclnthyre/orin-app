@@ -371,6 +371,7 @@ main {
 }
 
 .accordion-body {
+  display: none;
   max-height: 0;
   overflow: visible;
   transition: max-height .35s ease;
@@ -378,6 +379,7 @@ main {
 
 .accordion-body.open {
   max-height: 3000px;
+  display: block;
 }
 
 .accordion-header .material-icons-outlined {
@@ -387,6 +389,7 @@ main {
 .material-icons-outlined.rotated {
   transform: rotate(180deg);
 }
+
 
 
 
