@@ -1,5 +1,3 @@
-/* ================= VARIÁVEIS ================= */
-
 :root {
   --primary: #90190d;
   --bg: #f5f5f5;
@@ -15,7 +13,7 @@
   }
 }
 
-/* ================= BASE ================= */
+/* ===== BASE ===== */
 
 body {
   margin: 0;
@@ -34,10 +32,10 @@ header {
 
 main {
   padding: 16px;
-  padding-bottom: 80px;
+  padding-bottom: 96px;
 }
 
-/* ================= MENU ================= */
+/* ===== MENU ===== */
 
 .menu {
   position: fixed;
@@ -64,7 +62,7 @@ main {
   color: var(--primary);
 }
 
-/* ================= CARDS PADRÃO ================= */
+/* ===== CARDS ===== */
 
 .card {
   background: var(--card);
@@ -93,21 +91,21 @@ main {
   opacity: .8;
 }
 
-/* ================= ÁUDIOS ================= */
+/* =====================================================
+   ÁUDIOS — ESTILIZAÇÃO BONITA E SEGURA
+===================================================== */
 
 .audio-card {
-  background: var(--card);
-  border-radius: 20px;
   padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .audio-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
 }
 
 .audio-icon {
@@ -116,8 +114,8 @@ main {
 }
 
 .audio-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
   line-height: 1.3;
 }
 
@@ -128,27 +126,38 @@ main {
   border-radius: 12px;
 }
 
-/* ================= LEITURA ================= */
+/* ===== BOTÃO INSTALAR APP (DECENTE) ===== */
+
+.install-btn {
+  position: fixed;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  z-index: 1000;
+}
+
+/* ===== LEITURA / ARTIGO (INALTERADO) ===== */
 
 .leitura {
   background: var(--bg);
-}
-
-#progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 3px;
-  width: 0%;
-  background: var(--primary);
-  z-index: 2000;
+  color: var(--text);
 }
 
 .top-bar {
   display: flex;
   align-items: center;
   padding: 12px;
-  background: var(--primary);
+  background: #90190d;
   color: #fff;
 }
 
@@ -167,82 +176,12 @@ main {
   color: #fff;
 }
 
-.material-icons-outlined {
-  font-size: 22px;
-}
-
-.artigo-container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 20px 18px 80px;
-}
-
-.artigo-img {
-  width: 100%;
-  border-radius: 14px;
-  margin-bottom: 20px;
-}
-
-.artigo-container h1 {
-  font-size: 1.8rem;
-  line-height: 1.3;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
-.artigo-texto {
-  font-size: 1.05rem;
-  line-height: 1.75;
-}
-
-.artigo-texto ul,
-.artigo-texto ol {
-  padding-left: 20px;
-  margin: 18px 0;
-}
-
-.artigo-texto blockquote {
-  border-left: 4px solid var(--primary);
-  padding-left: 16px;
-  margin: 24px 0;
-  font-style: italic;
-}
-
-/* ================= SKELETON ================= */
-
-.skeleton-img,
-.skeleton-title,
-.skeleton-text {
-  background: linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%);
-  background-size: 400% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.skeleton-img { height: 200px; }
-.skeleton-title { height: 28px; width: 70%; }
-.skeleton-text { height: 160px; }
-
-@keyframes shimmer {
-  0% { background-position: 100% 0 }
-  100% { background-position: -100% 0 }
-}
-
-/* ================= INSTALL ================= */
-
-.install-btn {
+#progress {
   position: fixed;
-  bottom: 72px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 20px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  font-size: 14px;
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
-  display: none;
-  z-index: 1000;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: #90190d;
+  z-index: 2000;
 }
