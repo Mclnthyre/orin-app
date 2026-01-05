@@ -30,10 +30,11 @@ header {
   text-align: center;
 }
 
-main {
+body:not(.leitura) main {
   padding: 16px;
   padding-bottom: 96px;
 }
+
 
 /* ===== MENU ===== */
 
@@ -185,3 +186,4 @@ main {
   background: #90190d;
   z-index: 2000;
 }
+
