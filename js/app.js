@@ -85,7 +85,10 @@ function mostrar(secao) {
             <span class="audio-icon material-icons-outlined">headphones</span>
             <h3 class="audio-title">${a.titulo}</h3>
           </div>
-          <div class="audio-player">${a.embed}</div>
+         <button onclick="tocarAudio('${a.audio}', '${a.titulo}')">
+  ▶️ Ouvir
+</button>
+
         </div>
       </div>
     `);
@@ -143,3 +146,78 @@ function instalar() {
     installBtn.style.display = 'none';
   });
 }
+
+/* ===== MINI PLAYER GLOBAL ===== */
+
+const audio = document.getElementById('globalAudio');
+const miniPlayer = document.getElementById('miniPlayer');
+const miniTitle = document.getElementById('miniTitle');
+const playBtn = document.getElementById('miniPlay');
+const pauseBtn = document.getElementById('miniPause');
+const closeBtn = document.getElementById('miniClose');
+
+/* restaurar estado */
+const savedAudio = localStorage.getItem('audioSrc');
+const savedTime = localStorage.getItem('audioTime');
+const savedTitle = localStorage.getItem('audioTitle');
+
+if (savedAudio) {
+  audio.src = savedAudio;
+  miniTitle.textContent = savedTitle || '';
+  miniPlayer.classList.remove('hidden');
+
+  audio.addEventListener('loadedmetadata', () => {
+    audio.currentTime = savedTime || 0;
+  });
+}
+
+/* controles */
+playBtn.onclick = () => {
+  audio.play();
+  playBtn.classList.add('hidden');
+  pauseBtn.classList.remove('hidden');
+};
+
+pauseBtn.onclick = () => {
+  audio.pause();
+  pauseBtn.classList.add('hidden');
+  playBtn.classList.remove('hidden');
+};
+
+closeBtn.onclick = () => {
+  audio.pause();
+  audio.src = '';
+  miniPlayer.classList.add('hidden');
+  localStorage.clear();
+};
+
+/* persistência */
+audio.addEventListener('timeupdate', () => {
+  localStorage.setItem('audioTime', audio.currentTime);
+});
+
+audio.addEventListener('play', () => {
+  playBtn.classList.add('hidden');
+  pauseBtn.classList.remove('hidden');
+});
+
+audio.addEventListener('pause', () => {
+  pauseBtn.classList.add('hidden');
+  playBtn.classList.remove('hidden');
+});
+
+/* função pública */
+function tocarAudio(src, titulo) {
+  if (audio.src !== src) {
+    audio.src = src;
+  }
+
+  miniTitle.textContent = titulo;
+  miniPlayer.classList.remove('hidden');
+  audio.play();
+
+  localStorage.setItem('audioSrc', src);
+  localStorage.setItem('audioTitle', titulo);
+}
+
+
