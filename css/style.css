@@ -464,6 +464,14 @@ main {
 }
 
 
+@media (prefers-color-scheme: dark) {
+  .accordion-header {
+    color: #ffffff;
+  }
+}
+
+
+
 
 
 
