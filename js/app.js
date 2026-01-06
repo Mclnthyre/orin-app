@@ -1,8 +1,14 @@
+/* ===============================
+   CONFIG
+================================ */
 const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
 const BASE = `https://opensheet.elk.sh/${PLANILHA_ID}`;
 
 let dados = {};
 
+/* ===============================
+   CARREGAMENTO INICIAL
+================================ */
 async function carregar() {
   try {
     const [artigos, audios, videos, servicos] = await Promise.all([
@@ -14,19 +20,26 @@ async function carregar() {
 
     dados = { artigos, audios, videos, servicos };
     mostrar('artigos');
-  } catch {
+  } catch (e) {
+    console.error(e);
     document.getElementById('conteudo').innerHTML =
       '<p>Erro ao carregar conteúdo.</p>';
   }
 }
 
+/* ===============================
+   MENU
+================================ */
 function ativar(secao) {
   document.querySelectorAll('.menu button')
     .forEach(b => b.classList.remove('active'));
-  document.getElementById(secao + '-btn').classList.add('active');
+  const btn = document.getElementById(secao + '-btn');
+  if (btn) btn.classList.add('active');
 }
 
-/* ===== AGRUPAR POR TAG ===== */
+/* ===============================
+   AGRUPAR POR TAG
+================================ */
 function agruparPorTag(lista) {
   return lista.reduce((acc, item) => {
     const tag = item.tag || 'Outros';
@@ -36,7 +49,9 @@ function agruparPorTag(lista) {
   }, {});
 }
 
-/* ===== ACCORDION ===== */
+/* ===============================
+   ACCORDION
+================================ */
 function renderAccordion(grupos, renderItem) {
   return Object.keys(grupos).map(tag => `
     <div class="accordion">
@@ -58,14 +73,16 @@ function toggleAccordion(btn) {
   icon.classList.toggle('rotated');
 }
 
-/* ===== MOSTRAR ===== */
+/* ===============================
+   RENDERIZAÇÃO PRINCIPAL
+================================ */
 function mostrar(secao) {
   ativar(secao);
   let html = '';
 
   if (secao === 'artigos') {
     const grupos = agruparPorTag(dados.artigos);
-    html = renderAccordion(grupos, (a, i) => `
+    html = renderAccordion(grupos, a => `
       <div class="card" onclick="location.href='artigo.html?id=${dados.artigos.indexOf(a)}'">
         ${a.imagem ? `<img src="${a.imagem}">` : ''}
         <div class="card-body">
@@ -85,10 +102,10 @@ function mostrar(secao) {
             <span class="audio-icon material-icons-outlined">headphones</span>
             <h3 class="audio-title">${a.titulo}</h3>
           </div>
-         <button onclick="tocarAudio('${a.audio}', '${a.titulo}')">
-  ▶️ Ouvir
-</button>
-
+          <button class="audio-play-btn"
+            onclick="tocarAudio('${a.audio}', '${a.titulo.replace(/'/g, "\\'")}')">
+            ▶️ Ouvir
+          </button>
         </div>
       </div>
     `);
@@ -121,21 +138,27 @@ function mostrar(secao) {
   document.getElementById('conteudo').innerHTML = html;
 }
 
-carregar();
-
-/* ===== SERVICE WORKER ===== */
+/* ===============================
+   SERVICE WORKER
+================================ */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 
-/* ===== BOTÃO INSTALAR ===== */
+/* ===============================
+   BOTÃO INSTALAR PWA
+================================ */
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
+
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  if (installBtn) installBtn.style.display = 'none';
+}
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  installBtn.style.display = 'flex';
+  if (installBtn) installBtn.style.display = 'flex';
 });
 
 function instalar() {
@@ -143,26 +166,27 @@ function instalar() {
   deferredPrompt.prompt();
   deferredPrompt.userChoice.finally(() => {
     deferredPrompt = null;
-    installBtn.style.display = 'none';
+    if (installBtn) installBtn.style.display = 'none';
   });
 }
 
-/* ===== MINI PLAYER GLOBAL ===== */
-
+/* ===============================
+   MINI PLAYER GLOBAL
+================================ */
 const audio = document.getElementById('globalAudio');
 const miniPlayer = document.getElementById('miniPlayer');
 const miniTitle = document.getElementById('miniTitle');
-const playBtn = document.getElementById('miniPlay');
-const pauseBtn = document.getElementById('miniPause');
-const closeBtn = document.getElementById('miniClose');
+const miniPlay = document.getElementById('miniPlay');
+const miniPause = document.getElementById('miniPause');
+const miniClose = document.getElementById('miniClose');
 
 /* restaurar estado */
-const savedAudio = localStorage.getItem('audioSrc');
+const savedSrc = localStorage.getItem('audioSrc');
 const savedTime = localStorage.getItem('audioTime');
 const savedTitle = localStorage.getItem('audioTitle');
 
-if (savedAudio) {
-  audio.src = savedAudio;
+if (savedSrc && audio) {
+  audio.src = savedSrc;
   miniTitle.textContent = savedTitle || '';
   miniPlayer.classList.remove('hidden');
 
@@ -172,42 +196,38 @@ if (savedAudio) {
 }
 
 /* controles */
-playBtn.onclick = () => {
-  audio.play();
-  playBtn.classList.add('hidden');
-  pauseBtn.classList.remove('hidden');
-};
+miniPlay.onclick = () => audio.play();
+miniPause.onclick = () => audio.pause();
 
-pauseBtn.onclick = () => {
-  audio.pause();
-  pauseBtn.classList.add('hidden');
-  playBtn.classList.remove('hidden');
-};
-
-closeBtn.onclick = () => {
+miniClose.onclick = () => {
   audio.pause();
   audio.src = '';
   miniPlayer.classList.add('hidden');
-  localStorage.clear();
+  localStorage.removeItem('audioSrc');
+  localStorage.removeItem('audioTime');
+  localStorage.removeItem('audioTitle');
 };
+
+/* estado visual */
+audio.addEventListener('play', () => {
+  miniPlay.classList.add('hidden');
+  miniPause.classList.remove('hidden');
+});
+
+audio.addEventListener('pause', () => {
+  miniPause.classList.add('hidden');
+  miniPlay.classList.remove('hidden');
+});
 
 /* persistência */
 audio.addEventListener('timeupdate', () => {
   localStorage.setItem('audioTime', audio.currentTime);
 });
 
-audio.addEventListener('play', () => {
-  playBtn.classList.add('hidden');
-  pauseBtn.classList.remove('hidden');
-});
-
-audio.addEventListener('pause', () => {
-  pauseBtn.classList.add('hidden');
-  playBtn.classList.remove('hidden');
-});
-
 /* função pública */
 function tocarAudio(src, titulo) {
+  if (!src) return;
+
   if (audio.src !== src) {
     audio.src = src;
   }
@@ -220,4 +240,7 @@ function tocarAudio(src, titulo) {
   localStorage.setItem('audioTitle', titulo);
 }
 
-
+/* ===============================
+   START
+================================ */
+carregar();
