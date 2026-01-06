@@ -103,7 +103,7 @@ function mostrar(secao) {
             <h3 class="audio-title">${a.titulo}</h3>
           </div>
           <button class="audio-play-btn"
-            onclick="tocarAudio('${a.audio}', '${a.titulo.replace(/'/g, "\\'")}')">
+            onclick="tocarAudio('${a.embed}', '${a.titulo.replace(/'/g, "\\'")}')">
             ▶️ Ouvir
           </button>
         </div>
@@ -244,3 +244,4 @@ function tocarAudio(src, titulo) {
    START
 ================================ */
 carregar();
+
