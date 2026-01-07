@@ -228,23 +228,52 @@ audio.addEventListener('timeupdate', () => {
 
 /* função pública */
 function tocarAudio(src, titulo) {
-  if (!src) return;
+  if (!src || typeof src !== 'string') return;
 
+  const audio = document.getElementById('globalAudio');
+
+  // SRC salvo anteriormente
+  const lastSrc = localStorage.getItem('audioSrc');
+
+  // Se for um áudio DIFERENTE, resetar completamente
+  if (audio.src !== src && lastSrc !== src) {
+    audio.pause();
+    audio.currentTime = 0;
+
+    // Limpa progresso antigo
+    localStorage.removeItem('audioTime');
+  }
+
+  // Atualiza src apenas se mudou
   if (audio.src !== src) {
     audio.src = src;
   }
 
-  miniTitle.textContent = titulo;
-  miniPlayer.classList.remove('hidden');
-  audio.play();
+  // Atualiza UI
+  document.getElementById('miniTitle').textContent = titulo;
+  document.getElementById('miniPlayer').classList.remove('hidden');
 
+  // Persistência
   localStorage.setItem('audioSrc', src);
   localStorage.setItem('audioTitle', titulo);
+
+  // Só restaura tempo se for o MESMO áudio
+  const savedTime = localStorage.getItem('audioTime');
+  if (savedTime && lastSrc === src) {
+    audio.currentTime = parseFloat(savedTime);
+  } else {
+    audio.currentTime = 0;
+  }
+
+  audio.play().catch(err => {
+    console.warn('Erro ao tocar áudio:', err);
+  });
 }
 
 /* ===============================
    START
 ================================ */
 carregar();
+
 
 
