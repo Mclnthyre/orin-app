@@ -5,6 +5,8 @@ const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
 const BASE = `https://opensheet.elk.sh/${PLANILHA_ID}`;
 
 let dados = {};
+let playlist = [];
+let playlistIndex = -1;
 
 /* ===============================
    CARREGAMENTO INICIAL
@@ -74,7 +76,7 @@ function toggleAccordion(btn) {
 }
 
 /* ===============================
-   RENDERIZAÇÃO PRINCIPAL
+   RENDERIZAÇÃO
 ================================ */
 function mostrar(secao) {
   ativar(secao);
@@ -103,35 +105,10 @@ function mostrar(secao) {
             <h3 class="audio-title">${a.titulo}</h3>
           </div>
           <button class="audio-play-btn"
-  onclick="tocarAudio('${a.audio}', '${a.titulo}')">
-  <span class="material-icons-outlined">play_arrow</span>
-  Ouvir
-</button>
-
-        </div>
-      </div>
-    `);
-  }
-
-  if (secao === 'videos') {
-    const grupos = agruparPorTag(dados.videos);
-    html = renderAccordion(grupos, v => `
-      <div class="card">
-        <div class="card-body">
-          <h2>${v.titulo}</h2>
-          ${v.embed}
-        </div>
-      </div>
-    `);
-  }
-
-  if (secao === 'servicos') {
-    const grupos = agruparPorTag(dados.servicos);
-    html = renderAccordion(grupos, s => `
-      <div class="card">
-        <div class="card-body">
-          <h2>${s.nome}</h2>
-          <a href="${s.link}" target="_blank">Acessar</a>
+            onclick="iniciarPlaylist('${a.tag}', '${a.audio}', '${a.titulo}')">
+            <span class="material-icons-outlined">play_arrow</span>
+            Ouvir
+          </button>
         </div>
       </div>
     `);
@@ -141,59 +118,39 @@ function mostrar(secao) {
 }
 
 /* ===============================
-   SERVICE WORKER
+   PLAYLIST
 ================================ */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+function iniciarPlaylist(tag, src, titulo) {
+  playlist = dados.audios.filter(a => a.tag === tag);
+  playlistIndex = playlist.findIndex(a => a.audio === src);
+  if (playlistIndex === -1) return;
+  tocarAudio(src, titulo);
 }
 
 /* ===============================
-   BOTÃO INSTALAR PWA
-================================ */
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
-if (window.matchMedia('(display-mode: standalone)').matches) {
-  if (installBtn) installBtn.style.display = 'none';
-}
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (installBtn) installBtn.style.display = 'flex';
-});
-
-function instalar() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.finally(() => {
-    deferredPrompt = null;
-    if (installBtn) installBtn.style.display = 'none';
-  });
-}
-
-/* ===============================
-   MINI PLAYER GLOBAL
+   MINI PLAYER
 ================================ */
 const audio = document.getElementById('globalAudio');
 const miniPlayer = document.getElementById('miniPlayer');
 const miniTitle = document.getElementById('miniTitle');
 const miniPlay = document.getElementById('miniPlay');
 const miniPause = document.getElementById('miniPause');
-const miniClose = document.getElementById('miniClose');
 
-/* restaurar estado */
+const progressContainer = document.getElementById('progressContainer');
+const progressBar = document.getElementById('progressBar');
+
+/* restaurar */
 const savedSrc = localStorage.getItem('audioSrc');
 const savedTime = localStorage.getItem('audioTime');
 const savedTitle = localStorage.getItem('audioTitle');
 
-if (savedSrc && audio) {
+if (savedSrc) {
   audio.src = savedSrc;
   miniTitle.textContent = savedTitle || '';
   miniPlayer.classList.remove('hidden');
 
   audio.addEventListener('loadedmetadata', () => {
-    audio.currentTime = savedTime || 0;
+    audio.currentTime = savedTime ? parseFloat(savedTime) : 0;
   });
 }
 
@@ -201,16 +158,7 @@ if (savedSrc && audio) {
 miniPlay.onclick = () => audio.play();
 miniPause.onclick = () => audio.pause();
 
-miniClose.onclick = () => {
-  audio.pause();
-  audio.src = '';
-  miniPlayer.classList.add('hidden');
-  localStorage.removeItem('audioSrc');
-  localStorage.removeItem('audioTime');
-  localStorage.removeItem('audioTitle');
-};
-
-/* estado visual */
+/* visual play/pause */
 audio.addEventListener('play', () => {
   miniPlay.classList.add('hidden');
   miniPause.classList.remove('hidden');
@@ -221,59 +169,56 @@ audio.addEventListener('pause', () => {
   miniPlay.classList.remove('hidden');
 });
 
-/* persistência */
+/* progresso */
 audio.addEventListener('timeupdate', () => {
   localStorage.setItem('audioTime', audio.currentTime);
+
+  if (audio.duration) {
+    const percent = (audio.currentTime / audio.duration) * 100;
+    progressBar.style.width = percent + '%';
+  }
 });
 
-/* função pública */
+/* clique na barra */
+progressContainer.onclick = (e) => {
+  const largura = progressContainer.clientWidth;
+  const clique = e.offsetX;
+  const percentual = clique / largura;
+  audio.currentTime = audio.duration * percentual;
+};
+
+/* fim */
+audio.addEventListener('ended', () => {
+  if (playlist.length && playlistIndex > -1) {
+    playlistIndex++;
+    if (playlistIndex < playlist.length) {
+      const prox = playlist[playlistIndex];
+      tocarAudio(prox.audio, prox.titulo);
+    }
+  }
+});
+
+/* tocar */
 function tocarAudio(src, titulo) {
-  if (!src || typeof src !== 'string') return;
-
-  const audio = document.getElementById('globalAudio');
-
-  // SRC salvo anteriormente
   const lastSrc = localStorage.getItem('audioSrc');
 
-  // Se for um áudio DIFERENTE, resetar completamente
-  if (audio.src !== src && lastSrc !== src) {
+  if (lastSrc !== src) {
     audio.pause();
     audio.currentTime = 0;
-
-    // Limpa progresso antigo
     localStorage.removeItem('audioTime');
   }
 
-  // Atualiza src apenas se mudou
-  if (audio.src !== src) {
-    audio.src = src;
-  }
+  audio.src = src;
+  miniTitle.textContent = titulo;
+  miniPlayer.classList.remove('hidden');
 
-  // Atualiza UI
-  document.getElementById('miniTitle').textContent = titulo;
-  document.getElementById('miniPlayer').classList.remove('hidden');
-
-  // Persistência
   localStorage.setItem('audioSrc', src);
   localStorage.setItem('audioTitle', titulo);
 
-  // Só restaura tempo se for o MESMO áudio
-  const savedTime = localStorage.getItem('audioTime');
-  if (savedTime && lastSrc === src) {
-    audio.currentTime = parseFloat(savedTime);
-  } else {
-    audio.currentTime = 0;
-  }
-
-  audio.play().catch(err => {
-    console.warn('Erro ao tocar áudio:', err);
-  });
+  audio.play();
 }
 
 /* ===============================
    START
 ================================ */
 carregar();
-
-
-
