@@ -9,24 +9,18 @@ let playlist = [];
 let playlistIndex = -1;
 
 /* ===============================
-   CARREGAMENTO INICIAL
+   CARREGAMENTO
 ================================ */
 async function carregar() {
-  try {
-    const [artigos, audios, videos, servicos] = await Promise.all([
-      fetch(`${BASE}/artigos`).then(r => r.json()),
-      fetch(`${BASE}/audios`).then(r => r.json()),
-      fetch(`${BASE}/videos`).then(r => r.json()),
-      fetch(`${BASE}/servicos`).then(r => r.json())
-    ]);
+  const [artigos, audios, videos, servicos] = await Promise.all([
+    fetch(`${BASE}/artigos`).then(r => r.json()),
+    fetch(`${BASE}/audios`).then(r => r.json()),
+    fetch(`${BASE}/videos`).then(r => r.json()),
+    fetch(`${BASE}/servicos`).then(r => r.json())
+  ]);
 
-    dados = { artigos, audios, videos, servicos };
-    mostrar('artigos');
-  } catch (e) {
-    console.error(e);
-    document.getElementById('conteudo').innerHTML =
-      '<p>Erro ao carregar conteúdo.</p>';
-  }
+  dados = { artigos, audios, videos, servicos };
+  mostrar('artigos');
 }
 
 /* ===============================
@@ -45,7 +39,7 @@ function ativar(secao) {
 function agruparPorTag(lista) {
   return lista.reduce((acc, item) => {
     const tag = item.tag || 'Outros';
-    if (!acc[tag]) acc[tag] = [];
+    acc[tag] = acc[tag] || [];
     acc[tag].push(item);
     return acc;
   }, {});
@@ -105,7 +99,7 @@ function mostrar(secao) {
             <h3 class="audio-title">${a.titulo}</h3>
           </div>
           <button class="audio-play-btn"
-            onclick="iniciarPlaylist('${a.tag}', '${a.audio}', '${a.titulo}')">
+            onclick="iniciarPlaylist('${a.tag}','${a.audio}','${a.titulo}')">
             <span class="material-icons-outlined">play_arrow</span>
             Ouvir
           </button>
@@ -135,11 +129,12 @@ const miniPlayer = document.getElementById('miniPlayer');
 const miniTitle = document.getElementById('miniTitle');
 const miniPlay = document.getElementById('miniPlay');
 const miniPause = document.getElementById('miniPause');
+const miniClose = document.getElementById('miniClose');
 
-const progressContainer = document.getElementById('progressContainer');
-const progressBar = document.getElementById('progressBar');
+const progressContainer = document.getElementById('miniProgress');
+const progressFill = document.getElementById('miniProgressFill');
 
-/* restaurar */
+/* restaurar estado */
 const savedSrc = localStorage.getItem('audioSrc');
 const savedTime = localStorage.getItem('audioTime');
 const savedTitle = localStorage.getItem('audioTitle');
@@ -158,7 +153,14 @@ if (savedSrc) {
 miniPlay.onclick = () => audio.play();
 miniPause.onclick = () => audio.pause();
 
-/* visual play/pause */
+miniClose.onclick = () => {
+  audio.pause();
+  audio.src = '';
+  miniPlayer.classList.add('hidden');
+  localStorage.clear();
+};
+
+/* play / pause visual */
 audio.addEventListener('play', () => {
   miniPlay.classList.add('hidden');
   miniPause.classList.remove('hidden');
@@ -175,7 +177,7 @@ audio.addEventListener('timeupdate', () => {
 
   if (audio.duration) {
     const percent = (audio.currentTime / audio.duration) * 100;
-    progressBar.style.width = percent + '%';
+    progressFill.style.width = percent + '%';
   }
 });
 
@@ -183,18 +185,15 @@ audio.addEventListener('timeupdate', () => {
 progressContainer.onclick = (e) => {
   const largura = progressContainer.clientWidth;
   const clique = e.offsetX;
-  const percentual = clique / largura;
-  audio.currentTime = audio.duration * percentual;
+  audio.currentTime = (clique / largura) * audio.duration;
 };
 
-/* fim */
+/* fim da faixa */
 audio.addEventListener('ended', () => {
-  if (playlist.length && playlistIndex > -1) {
-    playlistIndex++;
-    if (playlistIndex < playlist.length) {
-      const prox = playlist[playlistIndex];
-      tocarAudio(prox.audio, prox.titulo);
-    }
+  playlistIndex++;
+  if (playlistIndex < playlist.length) {
+    const prox = playlist[playlistIndex];
+    tocarAudio(prox.audio, prox.titulo);
   }
 });
 
