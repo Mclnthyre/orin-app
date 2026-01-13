@@ -275,8 +275,11 @@ function mostrar(secao) {
     html = renderAccordion(grupos, v => `
       <div class="card">
         <div class="card-body">
-          <h2>${v ? escapeHtml(v.titulo) : ''}</h2>
-          ${v && v.embed ? v.embed : ''}
+          <h2>${v ? escapeHtml(v.titulo) : ''}</h2><div class="video-wrapper">
+ ${v && v.embed ? v.embed : ''}
+</div>
+
+         
         </div>
       </div>
     `);
@@ -404,3 +407,4 @@ window.instalar = function() {
     if (installBtn) installBtn.style.display = 'none';
   });
 };
+
