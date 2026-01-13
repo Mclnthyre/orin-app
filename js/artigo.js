@@ -1,6 +1,3 @@
-const PLANILHA_ID = "1GBMHIKSYAZPvKumlmbFPvIvDxKhTtBWhyT2e3JP0MPE";
-const BASE = `https://opensheet.elk.sh/${PLANILHA_ID}`;
-
 let artigoAtual = null;
 
 // ======================
