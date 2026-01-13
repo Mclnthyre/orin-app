@@ -9,10 +9,20 @@ let playlist = [];
 let playlistIndex = -1;
 
 /* ===============================
+   PLAYER ELEMENTS
+================================ */
+const audio = document.getElementById('globalAudio');
+const miniPlayer = document.getElementById('miniPlayer');
+const miniTitle = document.getElementById('miniTitle');
+const playPauseBtn = document.getElementById('playPause');
+const closePlayerBtn = document.getElementById('closePlayer');
+
+/* ===============================
    INIT
 ================================ */
 document.addEventListener('DOMContentLoaded', () => {
   carregar();
+  restaurarAudio();
 });
 
 /* ===============================
@@ -35,6 +45,62 @@ async function carregar() {
       '<p>Erro ao carregar conteúdo.</p>';
   }
 }
+
+/* ===============================
+   AUDIO CORE
+================================ */
+function tocarAudio(src, titulo) {
+  const lastSrc = localStorage.getItem('audioSrc');
+
+  if (lastSrc !== src) {
+    audio.pause();
+    audio.currentTime = 0;
+    localStorage.removeItem('audioTime');
+  }
+
+  audio.src = src;
+  audio.play();
+
+  miniTitle.textContent = titulo;
+  miniPlayer.classList.remove('hidden');
+
+  localStorage.setItem('audioSrc', src);
+  localStorage.setItem('audioTitle', titulo);
+}
+
+/* ===============================
+   AUDIO STATE
+================================ */
+function restaurarAudio() {
+  const src = localStorage.getItem('audioSrc');
+  const titulo = localStorage.getItem('audioTitle');
+  const time = localStorage.getItem('audioTime');
+
+  if (!src) return;
+
+  audio.src = src;
+  miniTitle.textContent = titulo || '';
+  miniPlayer.classList.remove('hidden');
+
+  audio.addEventListener('loadedmetadata', () => {
+    if (time) audio.currentTime = parseFloat(time);
+  });
+}
+
+audio.addEventListener('timeupdate', () => {
+  localStorage.setItem('audioTime', audio.currentTime);
+});
+
+playPauseBtn?.addEventListener('click', () => {
+  audio.paused ? audio.play() : audio.pause();
+});
+
+closePlayerBtn?.addEventListener('click', () => {
+  audio.pause();
+  audio.src = '';
+  miniPlayer.classList.add('hidden');
+  localStorage.clear();
+});
 
 /* ===============================
    AUX
@@ -139,7 +205,7 @@ function mostrar(secao) {
 }
 
 /* ===============================
-   PLAYER / PLAYLIST
+   PLAYLIST
 ================================ */
 function iniciarPlaylist(tag, src, titulo) {
   playlist = dados.audios.filter(a => a.tag === tag);
