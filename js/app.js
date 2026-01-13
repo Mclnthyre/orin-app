@@ -88,24 +88,23 @@ function mostrar(secao) {
   let html = '';
 
   if (secao === 'artigos') {
-  html = renderAccordion(agruparPorTag(dados.artigos), a => `
-    <div class="card artigo-card"
-         onclick="location.href='artigo.html?id=${dados.artigos.indexOf(a)}'">
+    html = renderAccordion(agruparPorTag(dados.artigos), a => `
+      <div class="card artigo-card"
+           onclick="location.href='artigo.html?id=${dados.artigos.indexOf(a)}'">
 
-      ${a.imagem ? `
-        <div class="card-thumb"
-             style="background-image:url('${a.imagem}')">
+        ${a.imagem ? `
+          <div class="card-thumb"
+               style="background-image:url('${a.imagem}')">
+          </div>
+        ` : ''}
+
+        <div class="card-body">
+          <h2>${a.titulo}</h2>
+          <p>${a.resumo || ''}</p>
         </div>
-      ` : ''}
-
-      <div class="card-body">
-        <h2>${a.titulo}</h2>
-        <p>${a.resumo || ''}</p>
       </div>
-    </div>
-  `);
-}
-
+    `);
+  }
 
   if (secao === 'audios') {
     html = renderAccordion(agruparPorTag(dados.audios), a => `
@@ -140,9 +139,24 @@ function mostrar(secao) {
 }
 
 /* ===============================
+   PLAYER / PLAYLIST
+================================ */
+function iniciarPlaylist(tag, src, titulo) {
+  playlist = dados.audios.filter(a => a.tag === tag);
+  playlistIndex = playlist.findIndex(a => a.audio === src);
+
+  if (playlistIndex === -1) {
+    tocarAudio(src, titulo);
+    return;
+  }
+
+  const atual = playlist[playlistIndex];
+  tocarAudio(atual.audio, atual.titulo);
+}
+
+/* ===============================
    EXPORTS
 ================================ */
 window.mostrar = mostrar;
 window.iniciarPlaylist = iniciarPlaylist;
 window.tocarAudio = tocarAudio;
-
