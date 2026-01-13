@@ -88,15 +88,24 @@ function mostrar(secao) {
   let html = '';
 
   if (secao === 'artigos') {
-    html = renderAccordion(agruparPorTag(dados.artigos), a => `
-      <div class="card" onclick="location.href='artigo.html?id=${dados.artigos.indexOf(a)}'">
-        <div class="card-body">
-          <h2>${a.titulo}</h2>
-          <p>${a.resumo}</p>
+  html = renderAccordion(agruparPorTag(dados.artigos), a => `
+    <div class="card artigo-card"
+         onclick="location.href='artigo.html?id=${dados.artigos.indexOf(a)}'">
+
+      ${a.imagem ? `
+        <div class="card-thumb"
+             style="background-image:url('${a.imagem}')">
         </div>
+      ` : ''}
+
+      <div class="card-body">
+        <h2>${a.titulo}</h2>
+        <p>${a.resumo || ''}</p>
       </div>
-    `);
-  }
+    </div>
+  `);
+}
+
 
   if (secao === 'audios') {
     html = renderAccordion(agruparPorTag(dados.audios), a => `
@@ -136,3 +145,4 @@ function mostrar(secao) {
 window.mostrar = mostrar;
 window.iniciarPlaylist = iniciarPlaylist;
 window.tocarAudio = tocarAudio;
+
