@@ -86,6 +86,13 @@ function restaurarAudio() {
     if (time) audio.currentTime = parseFloat(time);
   });
 }
+audio.addEventListener('play', () => {
+  localStorage.setItem('audioPlaying', 'true');
+});
+
+audio.addEventListener('pause', () => {
+  localStorage.setItem('audioPlaying', 'false');
+});
 
 audio.addEventListener('timeupdate', () => {
   localStorage.setItem('audioTime', audio.currentTime);
@@ -226,3 +233,4 @@ function iniciarPlaylist(tag, src, titulo) {
 window.mostrar = mostrar;
 window.iniciarPlaylist = iniciarPlaylist;
 window.tocarAudio = tocarAudio;
+
