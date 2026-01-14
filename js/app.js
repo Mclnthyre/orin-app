@@ -75,6 +75,7 @@ function restaurarAudio() {
   const src = localStorage.getItem('audioSrc');
   const titulo = localStorage.getItem('audioTitle');
   const time = localStorage.getItem('audioTime');
+  const wasPlaying = localStorage.getItem('audioPlaying') === 'true';
 
   if (!src) return;
 
@@ -85,29 +86,20 @@ function restaurarAudio() {
   audio.addEventListener('loadedmetadata', () => {
     if (time) audio.currentTime = parseFloat(time);
   });
+
+  // libera o play no primeiro gesto do usuário
+  if (wasPlaying) {
+    const resumeOnInteraction = () => {
+      audio.play().catch(() => {});
+      document.removeEventListener('click', resumeOnInteraction);
+      document.removeEventListener('touchstart', resumeOnInteraction);
+    };
+
+    document.addEventListener('click', resumeOnInteraction);
+    document.addEventListener('touchstart', resumeOnInteraction);
+  }
 }
-audio.addEventListener('play', () => {
-  localStorage.setItem('audioPlaying', 'true');
-});
 
-audio.addEventListener('pause', () => {
-  localStorage.setItem('audioPlaying', 'false');
-});
-
-audio.addEventListener('timeupdate', () => {
-  localStorage.setItem('audioTime', audio.currentTime);
-});
-
-playPauseBtn?.addEventListener('click', () => {
-  audio.paused ? audio.play() : audio.pause();
-});
-
-closePlayerBtn?.addEventListener('click', () => {
-  audio.pause();
-  audio.src = '';
-  miniPlayer.classList.add('hidden');
-  localStorage.clear();
-});
 
 /* ===============================
    AUX
@@ -233,4 +225,5 @@ function iniciarPlaylist(tag, src, titulo) {
 window.mostrar = mostrar;
 window.iniciarPlaylist = iniciarPlaylist;
 window.tocarAudio = tocarAudio;
+
 
