@@ -8,22 +8,99 @@ let dados = {};
 let playlist = [];
 let playlistIndex = -1;
 
-/* ===============================
-   PLAYER ELEMENTS
-================================ */
-const audio = document.getElementById('globalAudio');
-const miniPlayer = document.getElementById('miniPlayer');
-const miniTitle = document.getElementById('miniTitle');
-const playPauseBtn = document.getElementById('playPause');
-const closePlayerBtn = document.getElementById('closePlayer');
+let audio, miniPlayer, miniTitle, playPauseBtn, closePlayerBtn;
 
 /* ===============================
    INIT
 ================================ */
 document.addEventListener('DOMContentLoaded', () => {
+  initPlayer();
   carregar();
-  restaurarAudio();
 });
+
+/* ===============================
+   PLAYER INIT (CRÍTICO)
+================================ */
+function initPlayer() {
+  audio = document.getElementById('globalAudio');
+  miniPlayer = document.getElementById('miniPlayer');
+  miniTitle = document.getElementById('miniTitle');
+  playPauseBtn = document.getElementById('playPause');
+  closePlayerBtn = document.getElementById('closePlayer');
+
+  if (!audio || !miniPlayer) return;
+
+  // restore state
+  const src = localStorage.getItem('audioSrc');
+  const title = localStorage.getItem('audioTitle');
+  const time = localStorage.getItem('audioTime');
+  const wasPlaying = localStorage.getItem('audioPlaying') === 'true';
+
+  if (src) {
+    audio.src = src;
+    miniTitle.textContent = title || '';
+    miniPlayer.classList.remove('hidden');
+
+    audio.addEventListener('loadedmetadata', () => {
+      if (time) audio.currentTime = parseFloat(time);
+    });
+
+    if (wasPlaying) {
+      const resume = () => {
+        audio.play().catch(() => {});
+        document.removeEventListener('click', resume);
+        document.removeEventListener('touchstart', resume);
+      };
+      document.addEventListener('click', resume);
+      document.addEventListener('touchstart', resume);
+    }
+  }
+
+  audio.addEventListener('timeupdate', () => {
+    localStorage.setItem('audioTime', audio.currentTime);
+  });
+
+  audio.addEventListener('play', () => {
+    localStorage.setItem('audioPlaying', 'true');
+  });
+
+  audio.addEventListener('pause', () => {
+    localStorage.setItem('audioPlaying', 'false');
+  });
+
+  playPauseBtn?.addEventListener('click', () => {
+    audio.paused ? audio.play() : audio.pause();
+  });
+
+  closePlayerBtn?.addEventListener('click', () => {
+    audio.pause();
+    audio.src = '';
+    miniPlayer.classList.add('hidden');
+    localStorage.clear();
+  });
+}
+
+/* ===============================
+   AUDIO CORE
+================================ */
+function tocarAudio(src, titulo) {
+  const lastSrc = localStorage.getItem('audioSrc');
+
+  if (lastSrc !== src) {
+    audio.pause();
+    audio.currentTime = 0;
+    localStorage.removeItem('audioTime');
+  }
+
+  audio.src = src;
+  audio.play().catch(() => {});
+
+  miniTitle.textContent = titulo;
+  miniPlayer.classList.remove('hidden');
+
+  localStorage.setItem('audioSrc', src);
+  localStorage.setItem('audioTitle', titulo);
+}
 
 /* ===============================
    FETCH
@@ -40,69 +117,24 @@ async function carregar() {
     dados = { artigos, audios, videos, servicos };
     mostrar('artigos');
   } catch (e) {
-    console.error(e);
     document.getElementById('conteudo').innerHTML =
       '<p>Erro ao carregar conteúdo.</p>';
   }
 }
 
 /* ===============================
-   AUDIO CORE
+   PLAYLIST
 ================================ */
-function tocarAudio(src, titulo) {
-  const lastSrc = localStorage.getItem('audioSrc');
+function iniciarPlaylist(tag, src, titulo) {
+  playlist = dados.audios.filter(a => a.tag === tag);
+  playlistIndex = playlist.findIndex(a => a.audio === src);
 
-  if (lastSrc !== src) {
-    audio.pause();
-    audio.currentTime = 0;
-    localStorage.removeItem('audioTime');
-  }
-
-  audio.src = src;
-  audio.play();
-
-  miniTitle.textContent = titulo;
-  miniPlayer.classList.remove('hidden');
-
-  localStorage.setItem('audioSrc', src);
-  localStorage.setItem('audioTitle', titulo);
+  const atual = playlist[playlistIndex] || { audio: src, titulo };
+  tocarAudio(atual.audio, atual.titulo);
 }
 
 /* ===============================
-   AUDIO STATE
-================================ */
-function restaurarAudio() {
-  const src = localStorage.getItem('audioSrc');
-  const titulo = localStorage.getItem('audioTitle');
-  const time = localStorage.getItem('audioTime');
-  const wasPlaying = localStorage.getItem('audioPlaying') === 'true';
-
-  if (!src) return;
-
-  audio.src = src;
-  miniTitle.textContent = titulo || '';
-  miniPlayer.classList.remove('hidden');
-
-  audio.addEventListener('loadedmetadata', () => {
-    if (time) audio.currentTime = parseFloat(time);
-  });
-
-  // libera o play no primeiro gesto do usuário
-  if (wasPlaying) {
-    const resumeOnInteraction = () => {
-      audio.play().catch(() => {});
-      document.removeEventListener('click', resumeOnInteraction);
-      document.removeEventListener('touchstart', resumeOnInteraction);
-    };
-
-    document.addEventListener('click', resumeOnInteraction);
-    document.addEventListener('touchstart', resumeOnInteraction);
-  }
-}
-
-
-/* ===============================
-   AUX
+   AUX / RENDER (inalterado)
 ================================ */
 function ativar(secao) {
   document.querySelectorAll('.menu button')
@@ -120,9 +152,6 @@ function agruparPorTag(lista) {
   }, {});
 }
 
-/* ===============================
-   ACCORDION
-================================ */
 function renderAccordion(grupos, renderItem) {
   return Object.keys(grupos).map(tag => `
     <div class="accordion">
@@ -142,9 +171,6 @@ function toggleAccordion(btn) {
   btn.querySelector('.material-icons-outlined')?.classList.toggle('rotated');
 }
 
-/* ===============================
-   RENDER
-================================ */
 function mostrar(secao) {
   ativar(secao);
   const c = document.getElementById('conteudo');
@@ -155,14 +181,8 @@ function mostrar(secao) {
   if (secao === 'artigos') {
     html = renderAccordion(agruparPorTag(dados.artigos), a => `
       <div class="card artigo-card"
-           onclick="location.href='artigo.html?id=${dados.artigos.indexOf(a)}'">
-
-        ${a.imagem ? `
-          <div class="card-thumb"
-               style="background-image:url('${a.imagem}')">
-          </div>
-        ` : ''}
-
+        onclick="location.href='artigo.html?id=${dados.artigos.indexOf(a)}'">
+        ${a.imagem ? `<div class="card-thumb" style="background-image:url('${a.imagem}')"></div>` : ''}
         <div class="card-body">
           <h2>${a.titulo}</h2>
           <p>${a.resumo || ''}</p>
@@ -204,26 +224,8 @@ function mostrar(secao) {
 }
 
 /* ===============================
-   PLAYLIST
-================================ */
-function iniciarPlaylist(tag, src, titulo) {
-  playlist = dados.audios.filter(a => a.tag === tag);
-  playlistIndex = playlist.findIndex(a => a.audio === src);
-
-  if (playlistIndex === -1) {
-    tocarAudio(src, titulo);
-    return;
-  }
-
-  const atual = playlist[playlistIndex];
-  tocarAudio(atual.audio, atual.titulo);
-}
-
-/* ===============================
    EXPORTS
 ================================ */
 window.mostrar = mostrar;
 window.iniciarPlaylist = iniciarPlaylist;
 window.tocarAudio = tocarAudio;
-
-
